@@ -30,3 +30,23 @@ stages:
         replaceExistingArchive: true
     - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       artifact: drop
+
+- stage: Deploy
+  displayName: Deploy stage
+  jobs:
+  - deployment: VMDeploy
+    displayName: Web deploy
+    environment:
+      name: MV
+      resourceType: VirtualMachine
+      tags: web # Update or remove value to match your tag
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+          - script: |
+              # Add your deployment scripts here
+              echo "Deploying to VM"
+            displayName: 'Deploy to VM'
